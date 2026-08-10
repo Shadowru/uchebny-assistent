@@ -1,0 +1,39 @@
+services:
+  openwebui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: openwebui
+    mem_limit: 3g
+    environment:
+      - WEBUI_URL=https://openwebui.extra.moscow
+      - DEFAULT_LOCALE=ru-RU
+      - WEBUI_NAME=Учебный ассистент
+      - OPENAI_API_BASE_URL=https://api.proxyapi.ru/openai/v1
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY}
+    command: ["bash", "-c", "python3 /custom/patch.py; exec bash start.sh"]
+    volumes:
+      - open-webui:/app/backend/data
+      - ./custom:/custom:ro
+    networks:
+      - proxy
+    restart: unless-stopped
+
+  proxyapi-relay:
+    build: ./relay
+    restart: unless-stopped
+    mem_limit: 64m
+    environment:
+      - RELAY_HOST=${RELAY_HOST}
+    volumes:
+      - ./relay/id_ed25519:/keys/id_ed25519:ro
+    networks:
+      proxy:
+        aliases:
+          - api.proxyapi.ru
+
+volumes:
+  open-webui:
+
+networks:
+  proxy:
+    external: true

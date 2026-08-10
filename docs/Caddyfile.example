@@ -1,0 +1,16 @@
+# Фрагменты для Caddyfile реверс-прокси (Caddy живёт отдельно и держит 80/443).
+# Контейнер Caddy должен быть подключён к внешней docker-сети "proxy",
+# тогда имя "openwebui" резолвится через DNS докера.
+
+{
+    # HTTP/3 отключён: у контейнера Caddy не проброшен 443/udp,
+    # а анонс h3 без него приводит к обрывам соединения в браузерах.
+    servers {
+        protocols h1 h2
+    }
+}
+
+openwebui.example.com {
+    reverse_proxy openwebui:8080
+    encode gzip
+}

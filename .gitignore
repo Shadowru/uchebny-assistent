@@ -1,0 +1,5 @@
+.env
+relay/id_ed25519
+relay/id_ed25519.pub
+myclaude.sh
+*.log

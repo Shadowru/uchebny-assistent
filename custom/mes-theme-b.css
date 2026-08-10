@@ -1,0 +1,199 @@
+/* ===== Версия B «Классная доска» — Учебный ассистент ===== */
+/* Палитра: доска #2F4A3E · мел #F2F0E4 · бумага #F6F5F0 · красная ручка #C4453C */
+@import url("/static/custom/fonts/pt.css");
+@import url("/static/custom/fonts/golos.css");
+
+:root {
+  --mes-board: #2f4a3e;
+  --mes-board-deep: #24382f;
+  --mes-board-line: #3c5c4d;
+  --mes-chalk: #f2f0e4;
+  --mes-chalk-dim: #cfd8cd;
+  --mes-paper: #f6f5f0;
+  --mes-ink: #2b2b28;
+  --mes-ink-muted: #6e6e66;
+  --mes-red-pen: #c4453c;
+  --mes-border: #e2e0d6;
+  --mes-accent-tint: #eaf0e6;
+  /* холодно-тёплые светлые серые Tailwind под бумагу */
+  --color-gray-50: #f4f3ee;
+  --color-gray-100: #ecebe3;
+  --color-gray-200: #e0ded2;
+  --color-gray-300: #cbc9ba;
+  --font-sans: "PT Sans", -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --default-font-family: var(--font-sans);
+  --app-text-scale: 1.25 !important;
+  --mes-topbar-h: 60px;
+}
+
+html, body {
+  background: var(--mes-paper) !important;
+  font-family: "PT Sans", -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
+}
+
+#splash-screen { background: var(--mes-paper) !important; }
+
+/* ===== кнопки: зелёный доски ===== */
+.bg-black { background-color: var(--mes-board) !important; }
+.hover\:bg-gray-900:hover,
+.hover\:bg-black:hover { background-color: var(--mes-board-deep) !important; }
+.dark .dark\:bg-white { background-color: var(--mes-board) !important; color: var(--mes-chalk) !important; }
+button.bg-emerald-600, .bg-emerald-600 { background-color: var(--mes-board) !important; }
+
+/* ===== сайдбар: белый лист на бумаге ===== */
+#sidebar, [id="sidebar"] {
+  background: #ffffff !important;
+  border-right: 1px solid var(--mes-border);
+}
+#sidebar .bg-gray-100 { background-color: var(--mes-accent-tint) !important; }
+
+/* ===== сообщения: пометки на полях ===== */
+.user-message .bg-gray-50,
+.user-message [class*="bg-gray-"] { background-color: var(--mes-accent-tint) !important; }
+
+/* ===== поле ввода ===== */
+#chat-input, .chat-input, textarea { font-family: inherit; }
+#message-input-container .bg-gray-50,
+form .bg-gray-50 { background: #ffffff !important; }
+
+.shadow-lg, .shadow-xl { box-shadow: 0 8px 24px rgba(43, 43, 40, 0.12) !important; }
+
+.prose a, .markdown a { color: var(--mes-board); text-decoration-color: var(--mes-chalk-dim); }
+
+/* красная ручка — выделение текста */
+::selection { background: rgba(196, 69, 60, 0.18); }
+:focus-visible { outline-color: var(--mes-board) !important; }
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: var(--color-gray-300); border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: var(--mes-board); }
+::-webkit-scrollbar-track { background: transparent; }
+
+.prompt-suggestion, [class*="suggestion"] { border-color: var(--mes-border) !important; }
+
+/* ===== СИГНАТУРА: шапка-доска ===== */
+#mes-topbar {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: var(--mes-topbar-h);
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"),
+    linear-gradient(180deg, #33523f 0%, var(--mes-board) 100%);
+  border-bottom: 4px solid #d9c9a3; /* деревянный бортик доски */
+  display: flex; align-items: center; gap: 18px;
+  padding: 0 20px;
+  z-index: 45;
+  font-family: "PT Sans", -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  box-sizing: border-box;
+}
+#mes-topbar .mes-left { display: flex; align-items: center; gap: 10px; }
+#mes-topbar .mes-left img { width: 34px; height: 34px; border-radius: 8px; box-shadow: 0 0 0 2px rgba(242, 240, 228, 0.25); }
+#mes-topbar .mes-title {
+  font-family: "PT Serif", Georgia, serif;
+  font-weight: 700; font-size: 18px; color: var(--mes-chalk);
+  letter-spacing: 0.01em; white-space: nowrap;
+}
+#mes-topbar .mes-nav { display: flex; gap: 2px; margin-left: 14px; flex: 1; }
+#mes-topbar .mes-item {
+  border: 0; background: none; padding: 8px 13px 10px; border-radius: 8px;
+  font-size: 15px; color: var(--mes-chalk-dim); cursor: pointer;
+  font-family: inherit; white-space: nowrap; position: relative;
+}
+#mes-topbar .mes-item:hover { background: rgba(242, 240, 228, 0.09); color: var(--mes-chalk); }
+#mes-topbar .mes-item.mes-active { color: var(--mes-chalk); font-weight: 700; background: none; }
+/* меловая волнистая линия под активным пунктом */
+#mes-topbar .mes-item.mes-active::after {
+  content: "";
+  position: absolute; left: 10px; right: 10px; bottom: 3px; height: 5px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 8' preserveAspectRatio='none'%3E%3Cpath d='M2 5 Q 15 1 30 4.5 T 60 4 T 90 5 T 118 3.5' fill='none' stroke='%23f2f0e4' stroke-width='2.4' stroke-linecap='round' opacity='0.92'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
+}
+#mes-logout {
+  border: 1.5px solid rgba(242, 240, 228, 0.55); color: var(--mes-chalk);
+  background: none; padding: 7px 18px; border-radius: 10px;
+  font-weight: 700; font-size: 15px; cursor: pointer; font-family: inherit;
+  white-space: nowrap; margin-left: auto;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+#mes-logout:hover { border-color: var(--mes-red-pen); background: var(--mes-red-pen); color: #fff; }
+#mes-logout.mes-hidden { display: none; }
+@media (max-width: 960px) { #mes-topbar .mes-nav { display: none; } }
+
+/* сдвиг приложения под панель */
+body { padding-top: var(--mes-topbar-h); }
+.h-screen { height: calc(100vh - var(--mes-topbar-h)) !important; }
+.min-h-screen { min-height: calc(100vh - var(--mes-topbar-h)) !important; }
+.max-h-\[100dvh\] { max-height: calc(100dvh - var(--mes-topbar-h)) !important; }
+.h-\[100dvh\] { height: calc(100dvh - var(--mes-topbar-h)) !important; }
+.h-dvh { height: calc(100dvh - var(--mes-topbar-h)) !important; }
+#sidebar.fixed, [id="sidebar"].fixed {
+  top: var(--mes-topbar-h) !important;
+  height: calc(100% - var(--mes-topbar-h)) !important;
+}
+
+/* скрыть меню пользователя */
+button[aria-label="User menu"],
+button[aria-label="Меню пользователя"] { display: none !important; }
+
+/* ===== наполнение пустого окна: карточки-подсказки в стиле МЭШ ===== */
+.h-36.w-full { height: auto !important; }
+.max-h-36.scrollbar-none {
+  max-height: none !important;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 12px;
+  overflow: visible !important;
+  padding: 6px 2px 12px;
+}
+@media (min-width: 1100px) {
+  .max-h-36.scrollbar-none { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+button.waterfall[role="listitem"] {
+  background: #ffffff !important;
+  border: 1px solid var(--mes-border);
+  border-radius: 14px;
+  padding: 14px 16px !important;
+  box-shadow: 0 1px 2px rgba(68, 75, 83, 0.05);
+  transition: box-shadow 0.15s, border-color 0.15s, transform 0.15s;
+}
+button.waterfall[role="listitem"]:hover {
+  border-color: var(--mes-board);
+  box-shadow: 0 6px 18px rgba(47, 74, 62, 0.16);
+  transform: translateY(-1px);
+}
+button.waterfall[role="listitem"] .text-sm {
+  font-weight: 600; color: #333333;
+}
+button.waterfall[role="listitem"] .text-xs {
+  color: var(--mes-ink-muted); margin-top: 2px;
+}
+
+/* ===== поле ввода: главный объект окна ===== */
+#message-input-container {
+  background: #ffffff !important;
+  border: 1px solid var(--mes-border) !important;
+  box-shadow: 0 12px 32px rgba(68, 75, 83, 0.10) !important;
+}
+#message-input-container:focus-within {
+  border-color: var(--mes-board) !important;
+  box-shadow: 0 12px 32px rgba(47, 74, 62, 0.18) !important;
+}
+
+/* подзаголовки карточек — до двух строк */
+button.waterfall[role="listitem"] .text-xs.line-clamp-1,
+button.waterfall[role="listitem"] .text-xs {
+  display: -webkit-box; -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2 !important; overflow: hidden; white-space: normal;
+}
+
+/* ===== приветствие-герой ===== */
+#mes-hero { text-align: center; margin: 0 auto 6px; padding: 0 16px; max-width: 660px; }
+#mes-hero .mes-hero-date {
+  font-size: 12px; letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--mes-board); font-weight: 700; margin-bottom: 10px;
+}
+#mes-hero .mes-hero-title {
+  font-family: "PT Serif", Georgia, serif;
+  font-size: 1.7rem; line-height: 1.25; font-weight: 700; color: var(--mes-ink); margin-bottom: 10px;
+}
+#mes-hero .mes-hero-sub {
+  font-size: 0.85rem; line-height: 1.5; color: var(--mes-ink-muted); max-width: 560px; margin: 0 auto 6px;
+}
