@@ -14,3 +14,19 @@ openwebui.example.com {
     reverse_proxy openwebui:8080
     encode gzip
 }
+
+# --- Опционально: дополнительное RU-зеркало (прокси без переноса) -----------
+# На отдельном хосте в RU-сегменте, за его собственным Caddy. Терминация TLS
+# локальная, дальше — обычный reverse_proxy на основной инстанс. Если основной
+# бокс недостижим по IPv4, указать его IPv6 напрямую с явным SNI:
+#
+# mes.extra.moscow {
+#	encode zstd gzip
+#	reverse_proxy https://[IPv6-основного-бокса]:443 {
+#		header_up Host openwebui.extra.moscow
+#		flush_interval -1
+#		transport http {
+#			tls_server_name openwebui.extra.moscow
+#		}
+#	}
+# }
