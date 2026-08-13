@@ -6,7 +6,7 @@ services:
     environment:
       - WEBUI_URL=https://openwebui.extra.moscow
       - DEFAULT_LOCALE=ru-RU
-      - WEBUI_NAME=Учебный ассистент
+      - WEBUI_NAME=ИИ-мастерская учителя
       - OPENAI_API_BASE_URL=https://api.proxyapi.ru/openai/v1
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY}

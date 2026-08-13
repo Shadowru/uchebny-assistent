@@ -1,24 +1,26 @@
-/* ===== Тема в стиле школьного портала (school.mos.ru/help) для OpenWebUI ===== */
+/* ===== Тема «ИИ-мастерская учителя» (МЭШ · ДОНМ) для OpenWebUI ===== */
 @import url("/static/custom/fonts/golos.css");
 
 :root {
-  --mes-accent: #39b3ae;
-  --mes-accent-dark: #2f9d99;
-  --mes-accent-deep: #257f7c;
-  --mes-accent-tint: #e4f4f3;
-  --mes-bg: #eff4f7;
-  --mes-border: #d8e2e8;
+  --mes-accent: #2c7be5;
+  --mes-accent-dark: #2568cc;
+  --mes-accent-deep: #1b5fcc;
+  --mes-accent-tint: #e8f0fd;
+  --mes-red: #c80f2e;
+  --mes-logo-red: #e13a47;
+  --mes-bg: #f6f7fa;
+  --mes-border: #e3e8ef;
   /* холодные светлые серые Tailwind */
-  --color-gray-50: #f3f7f9;
-  --color-gray-100: #e9eff3;
-  --color-gray-200: #dbe4ea;
-  --color-gray-300: #c3d1da;
+  --color-gray-50: #f4f6f9;
+  --color-gray-100: #eceff4;
+  --color-gray-200: #dfe4eb;
+  --color-gray-300: #c8d0da;
   /* шрифт */
   --font-sans: "Golos Text", -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   --default-font-family: var(--font-sans);
-  /* масштаб интерфейса под МЭШ и высота верхней панели */
+  /* масштаб интерфейса под МЭШ и высота верхней панели (включая красную линию) */
   --app-text-scale: 1.25 !important;
-  --mes-topbar-h: 60px;
+  --mes-topbar-h: 66px;
 }
 
 html, body {
@@ -62,7 +64,7 @@ form .bg-gray-50 { background: #ffffff !important; }
 .prose a, .markdown a { color: var(--mes-accent-deep); }
 
 /* выделение и фокус */
-::selection { background: rgba(57, 179, 174, 0.25); }
+::selection { background: rgba(44, 123, 229, 0.25); }
 :focus-visible { outline-color: var(--mes-accent) !important; }
 
 /* ===== скроллбары ===== */
@@ -74,37 +76,44 @@ form .bg-gray-50 { background: #ffffff !important; }
 /* подсказки на стартовом экране */
 .prompt-suggestion, [class*="suggestion"] { border-color: var(--mes-border) !important; }
 
-/* ===== верхняя панель МЭШ ===== */
+/* ===== верхняя панель «ИИ-мастерская учителя» ===== */
 #mes-topbar {
   position: fixed; top: 0; left: 0; right: 0;
   height: var(--mes-topbar-h);
   background: #fff;
+  border-top: 4px solid var(--mes-red);
   border-bottom: 1px solid var(--mes-border);
   display: flex; align-items: center; gap: 18px;
-  padding: 0 20px;
+  padding: 0 24px;
   z-index: 45;
   font-family: "Golos Text", -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   box-sizing: border-box;
 }
-#mes-topbar .mes-left { display: flex; align-items: center; gap: 10px; }
-#mes-topbar .mes-left img { width: 34px; height: 34px; border-radius: 8px; }
-#mes-topbar .mes-title { font-weight: 600; font-size: 17px; color: #333; white-space: nowrap; }
-#mes-topbar .mes-nav { display: flex; gap: 4px; margin-left: 10px; flex: 1; }
-#mes-topbar .mes-item {
-  border: 0; background: none; padding: 8px 14px; border-radius: 20px;
-  font-size: 15px; color: #444b53; cursor: pointer; font-family: inherit; white-space: nowrap;
+#mes-topbar .mes-left { display: flex; align-items: center; gap: 12px; }
+#mes-topbar .mes-logo { width: 40px; height: 40px; flex: none; }
+#mes-topbar .mes-titles { display: flex; flex-direction: column; line-height: 1.2; }
+#mes-topbar .mes-title { font-weight: 700; font-size: 16.5px; color: #1f2937; white-space: nowrap; }
+#mes-topbar .mes-subtitle { font-size: 12px; color: #6b7280; white-space: nowrap; }
+#mes-topbar .mes-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+#mes-topbar .mes-user { display: flex; flex-direction: column; text-align: right; line-height: 1.25; }
+#mes-topbar .mes-user-name { font-weight: 600; font-size: 14px; color: #1f2937; white-space: nowrap; }
+#mes-topbar .mes-user-role { font-size: 12px; color: #6b7280; white-space: nowrap; }
+#mes-topbar .mes-avatar {
+  width: 38px; height: 38px; border-radius: 50%; flex: none;
+  background: #dbe7fb; color: var(--mes-accent-deep);
+  font-weight: 700; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
 }
-#mes-topbar .mes-item:hover { background: var(--color-gray-100); color: var(--mes-accent-deep); }
-#mes-topbar .mes-item.mes-active { background: var(--mes-accent-tint); color: var(--mes-accent-deep); font-weight: 600; }
+#mes-topbar.mes-noauth .mes-user, #mes-topbar.mes-noauth .mes-avatar { display: none; }
 #mes-logout {
-  border: 1.5px solid var(--mes-accent-dark); color: var(--mes-accent-deep);
-  background: #fff; padding: 7px 18px; border-radius: 20px;
-  font-weight: 500; font-size: 15px; cursor: pointer; font-family: inherit; white-space: nowrap;
-  margin-left: auto;
+  border: 1.5px solid var(--mes-border); color: #55606e;
+  background: #fff; padding: 7px 16px; border-radius: 20px;
+  font-weight: 500; font-size: 14px; cursor: pointer; font-family: inherit; white-space: nowrap;
+  transition: border-color 0.15s, color 0.15s;
 }
-#mes-logout:hover { background: var(--mes-accent-dark); color: #fff; }
+#mes-logout:hover { border-color: var(--mes-red); color: var(--mes-red); }
 #mes-logout.mes-hidden { display: none; }
-@media (max-width: 960px) { #mes-topbar .mes-nav { display: none; } }
+@media (max-width: 820px) { #mes-topbar .mes-subtitle, #mes-topbar .mes-user { display: none; } }
 
 /* сдвиг приложения под панель */
 body { padding-top: var(--mes-topbar-h); }
@@ -149,7 +158,7 @@ button.waterfall[role="listitem"] {
 }
 button.waterfall[role="listitem"]:hover {
   border-color: var(--mes-accent);
-  box-shadow: 0 6px 18px rgba(57, 179, 174, 0.18);
+  box-shadow: 0 6px 18px rgba(44, 123, 229, 0.18);
   transform: translateY(-1px);
 }
 button.waterfall[role="listitem"] .text-sm {
@@ -167,7 +176,7 @@ button.waterfall[role="listitem"] .text-xs {
 }
 #message-input-container:focus-within {
   border-color: var(--mes-accent) !important;
-  box-shadow: 0 12px 32px rgba(57, 179, 174, 0.20) !important;
+  box-shadow: 0 12px 32px rgba(44, 123, 229, 0.20) !important;
 }
 
 /* подзаголовки карточек — до двух строк */
@@ -200,7 +209,7 @@ button.waterfall[role="listitem"] .text-xs {
   cursor: pointer; font-family: inherit;
   transition: background 0.15s, color 0.15s, box-shadow 0.15s;
 }
-.mes-wiz-btn:hover { background: var(--mes-accent-dark); color: #fff; box-shadow: 0 6px 18px rgba(57, 179, 174, 0.25); }
+.mes-wiz-btn:hover { background: var(--mes-accent-dark); color: #fff; box-shadow: 0 6px 18px rgba(44, 123, 229, 0.25); }
 
 /* ===== опросы-конструкторы (модальное окно в стиле МЭШ) ===== */
 #mes-wiz-overlay {
@@ -209,7 +218,7 @@ button.waterfall[role="listitem"] .text-xs {
   padding: 20px; box-sizing: border-box;
 }
 .mes-wiz-panel {
-  background: var(--mes-bg); border-radius: 18px; width: min(720px, 100%);
+  background: var(--mes-bg); border-radius: 18px; width: min(920px, 100%);
   max-height: min(88vh, 920px); display: flex; flex-direction: column; overflow: hidden;
   box-shadow: 0 24px 64px rgba(20, 40, 50, 0.3);
   font-family: "Golos Text", -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
@@ -226,7 +235,31 @@ button.waterfall[role="listitem"] .text-xs {
   cursor: pointer; flex: none;
 }
 .mes-wiz-close:hover { background: var(--color-gray-200); }
-.mes-wiz-body { overflow-y: auto; padding: 16px 22px; display: flex; flex-direction: column; gap: 12px; }
+.mes-wiz-cols { display: flex; flex: 1; min-height: 0; }
+.mes-wiz-body { flex: 1; min-width: 0; overflow-y: auto; padding: 16px 22px; display: flex; flex-direction: column; gap: 12px; }
+.mes-wiz-side {
+  width: 240px; flex: none; overflow-y: auto;
+  padding: 18px 18px 16px 0; display: flex; flex-direction: column; gap: 10px;
+}
+.mes-wiz-side-title {
+  font-size: 11.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  color: #8a94a3;
+}
+.mes-wiz-chips { display: flex; flex-wrap: wrap; gap: 6px; align-content: flex-start; }
+.mes-chip {
+  background: var(--mes-accent-tint); color: var(--mes-accent-deep);
+  font-size: 12.5px; font-weight: 500; border-radius: 8px; padding: 4px 9px 4px 7px;
+  max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.mes-chip::before { content: "✓ "; }
+.mes-chip-empty { background: var(--color-gray-100); color: #8a94a3; }
+.mes-chip-empty::before { content: ""; }
+.mes-wiz-warn {
+  margin-top: auto;
+  background: #fdeef0; border-left: 3px solid var(--mes-red); border-radius: 8px;
+  padding: 10px 12px; font-size: 12.5px; line-height: 1.45; color: #8c2332;
+}
+@media (max-width: 900px) { .mes-wiz-side { display: none; } }
 .mes-wiz-step { background: #fff; border: 1px solid var(--mes-border); border-radius: 14px; padding: 14px 16px; }
 .mes-wiz-step.mes-wiz-error { border-color: #d9534f; box-shadow: 0 0 0 3px rgba(217, 83, 79, 0.12); }
 .mes-wiz-step-head { display: flex; align-items: center; gap: 10px; }
@@ -252,7 +285,7 @@ button.waterfall[role="listitem"] .text-xs {
 }
 .mes-pill-custom { width: auto; flex: 1; min-width: 150px; margin-top: 0; border-radius: 18px; padding: 7px 14px; font-size: 14px; }
 .mes-wiz-input:focus, .mes-wiz-ta:focus, .mes-pill-custom:focus {
-  border-color: var(--mes-accent); box-shadow: 0 0 0 3px rgba(57, 179, 174, 0.15);
+  border-color: var(--mes-accent); box-shadow: 0 0 0 3px rgba(44, 123, 229, 0.15);
 }
 .mes-wiz-ta { resize: vertical; min-height: 58px; }
 .mes-switch {
@@ -273,7 +306,7 @@ button.waterfall[role="listitem"] .text-xs {
 .mes-wiz-go {
   margin-left: auto; flex: none; border: 0; background: var(--mes-accent-dark); color: #fff;
   border-radius: 22px; padding: 11px 22px; font-size: 15px; font-weight: 700;
-  cursor: pointer; font-family: inherit; box-shadow: 0 8px 20px rgba(57, 179, 174, 0.35);
+  cursor: pointer; font-family: inherit; box-shadow: 0 8px 20px rgba(44, 123, 229, 0.35);
   transition: background 0.15s;
 }
 .mes-wiz-go:hover { background: var(--mes-accent-deep); }

@@ -1,6 +1,6 @@
 import os, shutil, json, re
 
-NAME = os.environ.get("WEBUI_NAME", "Учебный ассистент")
+NAME = os.environ.get("WEBUI_NAME", "ИИ-мастерская учителя")
 IDX = "/app/build/index.html"
 BUILD_STATIC = "/app/build/static"
 BACKEND_STATIC = "/app/backend/open_webui/static"
@@ -22,16 +22,16 @@ snippet = (
 TOPBAR_JS = """<script>(function(){function mk(){
 if(document.getElementById('mes-topbar'))return;
 var b=document.createElement('div');b.id='mes-topbar';
-b.innerHTML='<div class="mes-left"><img src="/static/favicon.png" alt="">'+
-'<span class="mes-title">Учебный ассистент</span></div>'+
-'<nav class="mes-nav">'+
-'<button class="mes-item" type="button">Дневник</button>'+
-'<button class="mes-item" type="button">Расписание</button>'+
-'<button class="mes-item" type="button">Домашние задания</button>'+
-'<button class="mes-item" type="button">Библиотека</button>'+
-'<button class="mes-item mes-active" type="button">ИИ-ассистент</button>'+
-'</nav>'+
-'<button id="mes-logout" type="button">Выйти</button>';
+b.innerHTML='<div class="mes-left">'+
+'<svg class="mes-logo" viewBox="0 0 100 100" aria-hidden="true">'+
+'<g fill="none" stroke="#e13a47" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">'+
+'<path d="M25 20 V62 M25 20 L50 47 L75 20 M75 20 V62"/>'+
+'<path d="M25 70 Q37 77 50 70 Q63 77 75 70"/></g></svg>'+
+'<div class="mes-titles"><span class="mes-title">ИИ-мастерская учителя</span>'+
+'<span class="mes-subtitle">Московская электронная школа · ДОНМ</span></div></div>'+
+'<div class="mes-right"><div class="mes-user"><span class="mes-user-name"></span>'+
+'<span class="mes-user-role"></span></div><span class="mes-avatar"></span>'+
+'<button id="mes-logout" type="button">Выйти</button></div>';
 document.body.appendChild(b);
 var lo=document.getElementById('mes-logout');
 lo.addEventListener('click',function(){
@@ -39,15 +39,21 @@ fetch('/api/v1/auths/signout',{method:'POST',credentials:'include'})
 .catch(function(){}).finally(function(){
 try{localStorage.removeItem('token')}catch(e){}
 location.href='/auth';});});
-function tick(){try{lo.classList.toggle('mes-hidden',!localStorage.token)}catch(e){}}
+function tick(){try{var on=!!localStorage.token;
+lo.classList.toggle('mes-hidden',!on);b.classList.toggle('mes-noauth',!on);}catch(e){}}
 tick();setInterval(tick,2000);
-var heroName=null;
+var heroUser=null;
 setTimeout(function(){getName(function(){})},0);
-function getName(cb){if(heroName!==null){cb(heroName);return;}
+function getName(cb){if(heroUser!==null){cb((heroUser&&heroUser.name)||'');return;}
 fetch('/api/v1/auths/',{headers:{'Authorization':'Bearer '+(localStorage.token||'')}})
-.then(function(r){return r.json()}).then(function(u){heroName=(u&&u.name)||'';
+.then(function(r){return r.json()}).then(function(u){heroUser=u||{};
 if(u&&u.role==='admin')document.documentElement.classList.add('mes-admin');
-cb(heroName);})
+try{var nm=(u&&u.name)||'';
+if(nm){b.querySelector('.mes-user-name').textContent=nm;
+b.querySelector('.mes-user-role').textContent=(u.role==='admin')?'Администратор · Школа':'Учитель · Школа';
+var ps=nm.split(' ');var ini=(ps[0]||'').charAt(0)+((ps[1]||'').charAt(0)||'');
+b.querySelector('.mes-avatar').textContent=ini.toUpperCase();}}catch(e){}
+cb((u&&u.name)||'');})
 .catch(function(){cb('');});}
 function greetWord(){var h=new Date().getHours();return h<5?'Доброй ночи':(h<12?'Доброе утро':(h<18?'Добрый день':'Добрый вечер'));}
 function dateLine(){var d=new Date();
@@ -91,7 +97,7 @@ steps:[
 {key:'Тип урока',type:'pills',options:['Определи по теме','Изучение нового','Закрепление','Повторение','Контроль'],def:0},
 {key:'Длительность',type:'pills',options:['45 минут','20 минут','2 урока (90 минут)'],def:0},
 {key:'Задания двух уровней сложности',type:'toggle',desc:'Добавить к этапам урока варианты базового и повышенного уровня',on:'да — добавь к заданиям варианты базового и повышенного уровня',off:''},
-{key:'Пожелания',type:'textarea',opt:true,ph:'Например: добавь этап работы в парах и рефлексию в конце'}
+{key:'Ваш запрос',dataKey:'Пожелания учителя',type:'textarea',opt:true,desc:'Параметры шагов будут добавлены автоматически. Поле можно оставить пустым.',ph:'Например: добавь этап работы в парах и рефлексию в конце'}
 ]},
 explain:{title:'Объяснить по-разному',command:'/объяснить-по-разному',
 intro:'Несколько принципиально разных объяснений одного понятия — на случай, если основное не сработало.',
@@ -101,7 +107,7 @@ steps:[
 {key:'Предмет',type:'pills',required:true,custom:'Свой предмет…',options:SUBJ},
 {key:'Понятие',type:'text',required:true,ph:'Одно понятие, не раздел. Например: дробь, подлежащее, фотосинтез'},
 {key:'Сколько объяснений',type:'pills',options:['3','4','5'],def:1},
-{key:'Что уже пробовали',type:'textarea',opt:true,ph:'Объяснение, которое не сработало, — чтобы его не повторять'}
+{key:'Что уже пробовали',type:'textarea',opt:true,desc:'Поле можно оставить пустым.',ph:'Объяснение, которое не сработало, — чтобы его не повторять'}
 ]},
 task:{title:'Учебное задание',command:'/учебное-задание',
 intro:'Готовый раздаточный материал: разминка, основной блок, термины, вопросы — или целый рабочий лист.',
@@ -112,7 +118,7 @@ steps:[
 {key:'Тема',type:'text',required:true,ph:'Например: причастный оборот'},
 {key:'Тип задания',type:'pills',options:['Полный рабочий лист','Разминка','Основной блок','Термины','Вопросы'],def:0},
 {key:'Уровень',type:'pills',options:['Базовый','Повышенный'],def:0},
-{key:'Пожелания',type:'textarea',opt:true,ph:'Например: сделай упор на типичные ошибки'}
+{key:'Ваш запрос',dataKey:'Пожелания учителя',type:'textarea',opt:true,desc:'Параметры шагов будут добавлены автоматически. Поле можно оставить пустым.',ph:'Например: сделай упор на типичные ошибки'}
 ]}};
 function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function ctrl(s,i){
@@ -138,10 +144,14 @@ ov.innerHTML='<div class="mes-wiz-panel" role="dialog" aria-modal="true">'+
 '<div class="mes-wiz-head"><div><div class="mes-wiz-title">'+esc(c.title)+'</div>'+
 '<div class="mes-wiz-intro">'+esc(c.intro)+'</div></div>'+
 '<button type="button" class="mes-wiz-close" aria-label="Закрыть">&times;</button></div>'+
-'<div class="mes-wiz-body">'+sh+'</div>'+
-'<div class="mes-wiz-foot"><span class="mes-wiz-note">Ответ — черновик: проверьте материал перед уроком</span>'+
+'<div class="mes-wiz-cols"><div class="mes-wiz-body">'+sh+'</div>'+
+'<div class="mes-wiz-side"><div class="mes-wiz-side-title">Будет передано ассистенту</div>'+
+'<div class="mes-wiz-chips"></div>'+
+'<div class="mes-wiz-warn">ИИ подготовит черновик по вашим данным. Окончательное решение — за учителем: проверьте содержание перед уроком.</div></div></div>'+
+'<div class="mes-wiz-foot"><span class="mes-wiz-note">Черновик — требует проверки и утверждения учителем</span>'+
 '<button type="button" class="mes-wiz-go">&#10024; Сгенерировать материалы</button></div></div>';
 document.body.appendChild(ov);
+updateChips(c,ov);
 document.addEventListener('keydown',onKey);
 ov.addEventListener('click',function(e){
 if(e.target===ov||e.target.closest('.mes-wiz-close')){closeW();return;}
@@ -150,27 +160,45 @@ var p=e.target.closest('.mes-pill');
 if(p){var g=p.parentElement;
 var on=g.querySelectorAll('.mes-pill-on');for(var k=0;k<on.length;k++)on[k].classList.remove('mes-pill-on');
 p.classList.add('mes-pill-on');
-var ci=g.querySelector('.mes-pill-custom');if(ci)ci.value='';return;}
+var ci=g.querySelector('.mes-pill-custom');if(ci)ci.value='';
+updateChips(c,ov);return;}
 var sw=e.target.closest('.mes-switch');
-if(sw){sw.setAttribute('aria-checked',sw.getAttribute('aria-checked')==='true'?'false':'true');return;}
-if(e.target.closest('.mes-wiz-go'))generate(c,ov);});
+if(sw){sw.setAttribute('aria-checked',sw.getAttribute('aria-checked')==='true'?'false':'true');
+updateChips(c,ov);return;}
+if(e.target.closest('.mes-wiz-go')){generate(c,ov);return;}
+updateChips(c,ov);});
 ov.addEventListener('input',function(e){
 var st=e.target.closest('.mes-wiz-step');if(st)st.classList.remove('mes-wiz-error');
 if(e.target.classList.contains('mes-pill-custom')&&e.target.value){
 var on=e.target.parentElement.querySelectorAll('.mes-pill-on');
-for(var k=0;k<on.length;k++)on[k].classList.remove('mes-pill-on');}});}
-function collect(c,ov){var lines=[];
-for(var i=0;i<c.steps.length;i++){var s=c.steps[i],v='';
-var card=ov.querySelector('.mes-wiz-step[data-step="'+i+'"]');
-if(s.type==='pills'){var g=ov.querySelector('.mes-pills[data-i="'+i+'"]');
+for(var k=0;k<on.length;k++)on[k].classList.remove('mes-pill-on');}
+updateChips(c,ov);});}
+function stepValue(s,i,ov){
+if(s.type==='pills'){var g=ov.querySelector('.mes-pills[data-i="'+i+'"]');if(!g)return '';
 var ci=g.querySelector('.mes-pill-custom');
-if(ci&&ci.value.trim())v=ci.value.trim();
-else{var on=g.querySelector('.mes-pill-on');v=on?on.textContent.trim():'';}}
-else if(s.type==='toggle'){var sw=ov.querySelector('.mes-switch[data-i="'+i+'"]');
-v=(sw&&sw.getAttribute('aria-checked')==='true')?s.on:s.off;}
-else{var el=ov.querySelector('[data-i="'+i+'"]');v=el?el.value.trim():'';}
+if(ci&&ci.value.trim())return ci.value.trim();
+var on=g.querySelector('.mes-pill-on');return on?on.textContent.trim():'';}
+if(s.type==='toggle'){var sw=ov.querySelector('.mes-switch[data-i="'+i+'"]');
+return (sw&&sw.getAttribute('aria-checked')==='true')?s.on:s.off;}
+var el=ov.querySelector('[data-i="'+i+'"]');return el?el.value.trim():'';}
+function updateChips(c,ov){
+var box=ov.querySelector('.mes-wiz-chips');if(!box)return;
+var h='';
+for(var i=0;i<c.steps.length;i++){var s=c.steps[i];
+var v=stepValue(s,i,ov);if(!v)continue;
+var t=v;
+if(s.type==='toggle')t=s.key;
+else if(s.key==='Класс')t=v+' класс';
+else if(s.type==='textarea')t='Свой запрос';
+if(t.length>34)t=t.slice(0,33)+'…';
+h+='<span class="mes-chip">'+esc(t)+'</span>';}
+box.innerHTML=h||'<span class="mes-chip mes-chip-empty">Заполните шаги слева</span>';}
+function collect(c,ov){var lines=[];
+for(var i=0;i<c.steps.length;i++){var s=c.steps[i];
+var card=ov.querySelector('.mes-wiz-step[data-step="'+i+'"]');
+var v=stepValue(s,i,ov);
 if(s.required&&!v){if(card){card.classList.add('mes-wiz-error');card.scrollIntoView({behavior:'smooth',block:'center'});}return null;}
-if(v)lines.push('- '+s.key+': '+v);}
+if(v)lines.push('- '+(s.dataKey||s.key)+': '+v);}
 return lines;}
 function getTpl(cmd,cb){
 fetch('/api/v1/prompts/list',{headers:{'Authorization':'Bearer '+(localStorage.token||'')}})
