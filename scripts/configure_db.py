@@ -105,9 +105,27 @@ def main():
         con.execute("UPDATE prompt SET tags='[]' WHERE id=? AND tags IS NULL", (pid,))
         grant_public(con, "prompt", pid, now)
 
+    # --- гейт учебных запросов (filter-функция, срабатывает до обращения к LLM) ---
+    gate_code = open(os.path.join(os.path.dirname(__file__), "mes-gate.py")).read()
+    gate_meta = json.dumps(
+        {"description": "Отклоняет неучебные запросы до обращения к LLM", "manifest": {}},
+        ensure_ascii=False,
+    )
+    if con.execute("SELECT 1 FROM function WHERE id='mes_gate'").fetchone():
+        con.execute(
+            "UPDATE function SET content=?, meta=?, is_active=1, is_global=1, updated_at=? WHERE id='mes_gate'",
+            (gate_code, gate_meta, now),
+        )
+    else:
+        con.execute(
+            "INSERT INTO function (id, user_id, name, type, content, meta, valves, is_active, is_global, updated_at, created_at) "
+            "VALUES ('mes_gate', ?, 'МЭШ-гейт учебных запросов', 'filter', ?, ?, NULL, 1, 1, ?, ?)",
+            (admin_id, gate_code, gate_meta, now, now),
+        )
+
     con.commit()
     print("Готово: config —", len(config), "ключей; модель —", m["id"],
-          "; промптов —", len(seed["prompts"]))
+          "; промптов —", len(seed["prompts"]), "; гейт mes_gate установлен")
 
 
 def grant_public(con, rtype, rid, now):
