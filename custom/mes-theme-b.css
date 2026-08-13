@@ -133,6 +133,10 @@ body { padding-top: var(--mes-topbar-h); }
 button[aria-label="User menu"],
 button[aria-label="Меню пользователя"] { display: none !important; }
 
+/* скрыть модель у обычных пользователей (админ помечается классом mes-admin) */
+html:not(.mes-admin) button[id^="model-selector"],
+html:not(.mes-admin) #response-message-model-name { display: none !important; }
+
 /* ===== наполнение пустого окна: карточки-подсказки в стиле МЭШ ===== */
 .h-36.w-full { height: auto !important; }
 .max-h-36.scrollbar-none {

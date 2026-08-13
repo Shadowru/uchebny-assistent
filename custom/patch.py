@@ -42,9 +42,12 @@ location.href='/auth';});});
 function tick(){try{lo.classList.toggle('mes-hidden',!localStorage.token)}catch(e){}}
 tick();setInterval(tick,2000);
 var heroName=null;
+setTimeout(function(){getName(function(){})},0);
 function getName(cb){if(heroName!==null){cb(heroName);return;}
 fetch('/api/v1/auths/',{headers:{'Authorization':'Bearer '+(localStorage.token||'')}})
-.then(function(r){return r.json()}).then(function(u){heroName=(u&&u.name)||'';cb(heroName);})
+.then(function(r){return r.json()}).then(function(u){heroName=(u&&u.name)||'';
+if(u&&u.role==='admin')document.documentElement.classList.add('mes-admin');
+cb(heroName);})
 .catch(function(){cb('');});}
 function greetWord(){var h=new Date().getHours();return h<5?'Доброй ночи':(h<12?'Доброе утро':(h<18?'Добрый день':'Добрый вечер'));}
 function dateLine(){var d=new Date();
