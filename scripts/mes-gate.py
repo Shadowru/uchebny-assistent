@@ -35,16 +35,31 @@ DEFAULT_PATTERNS = ";".join(
 )
 
 # Корни слов (через ;) — запретные темы; совпадение по началу слова.
+# Блокируются всегда, независимо от контекста.
 DEFAULT_ROOTS = ";".join(
     [
         "политик", "политич", "президент", "путин", "зеленск", "байден",
         "навальн", "оппозиц", "митинг", "протест",
-        "война", "войн", "военн", "спецоперац", "мобилизац", "украин",
-        "нато", "санкци",
+        "спецоперац", "мобилизац", "нато", "санкци",
         "лгбт", "лесби", "гомосекс", "бисексу",
         "трансгендер", "квир", "секс", "эротик", "порно", "интим",
         "наркот", "суицид", "самоубийств",
         "террор", "экстремизм", "взрывчат", "казино",
+    ]
+)
+
+# Условные корни: блокируются, только если в запросе НЕТ учебного контекста.
+# Так «план урока: Великая Отечественная война» проходит,
+# а «расскажи про войну на Украине» — нет.
+DEFAULT_CONDITIONAL_ROOTS = ";".join(["война", "войн", "военн", "украин"])
+
+# Маркеры учебного контекста (корни): наличие любого «разрешает» условные темы.
+DEFAULT_EDU_MARKERS = ";".join(
+    [
+        "урок", "класс", "школьн", "ученик", "учебн", "задани",
+        "рабоч", "контрольн", "проверочн", "викторин", "тест",
+        "разминк", "домашн", "методич", "преподава", "фгос",
+        "объясн", "конспект", "презентаци", "программ",
     ]
 )
 
@@ -64,6 +79,14 @@ class Filter:
         blocked_roots: str = Field(
             default=DEFAULT_ROOTS,
             description="Корни слов через ';' — запрос отбивается, если слово начинается с корня",
+        )
+        conditional_roots: str = Field(
+            default=DEFAULT_CONDITIONAL_ROOTS,
+            description="Корни через ';' — отбиваются только без учебного контекста",
+        )
+        edu_markers: str = Field(
+            default=DEFAULT_EDU_MARKERS,
+            description="Корни-маркеры учебного контекста через ';' — разрешают условные темы",
         )
         reject_message: str = Field(
             default=DEFAULT_REJECT,
@@ -99,4 +122,15 @@ class Filter:
             root = root.strip().lower()
             if root and re.search(r"\b" + re.escape(root), text, re.IGNORECASE):
                 raise Exception(self.valves.reject_message)
+        # условные темы: пропускаем только при учебном контексте
+        has_edu = any(
+            re.search(r"\b" + re.escape(m.strip().lower()), text)
+            for m in self.valves.edu_markers.split(";")
+            if m.strip()
+        )
+        if not has_edu:
+            for root in self.valves.conditional_roots.split(";"):
+                root = root.strip().lower()
+                if root and re.search(r"\b" + re.escape(root), text, re.IGNORECASE):
+                    raise Exception(self.valves.reject_message)
         return body
