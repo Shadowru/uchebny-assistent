@@ -70,10 +70,14 @@ var h=document.createElement('div');h.id='mes-hero';
 h.innerHTML='<div class="mes-hero-date">'+dateLine()+'</div>'+
 '<div class="mes-hero-title">\u00A0</div>'+
 '<div class="mes-hero-sub">Помогу подготовить урок: план, объяснения по-разному, рабочий лист. Соберите материал по шагам, выберите карточку ниже или опишите задачу своими словами.</div>'+
-'<div class="mes-hero-actions"><span class="mes-ha-label">Собрать по шагам:</span>'+
-'<button class="mes-wiz-btn" data-wiz="plan" type="button">План урока</button>'+
-'<button class="mes-wiz-btn" data-wiz="explain" type="button">Объяснить по-разному</button>'+
-'<button class="mes-wiz-btn" data-wiz="task" type="button">Рабочий лист</button></div>';
+'<div class="mes-ha-label">Собрать по шагам</div>'+
+'<div class="mes-hero-actions">'+
+'<button class="mes-wiz-btn" data-wiz="plan" type="button"><span class="mes-wiz-btn-t">План урока</span>'+
+'<span class="mes-wiz-btn-s">Этапы с таймингом, материалы и ДЗ — по ФГОС</span></button>'+
+'<button class="mes-wiz-btn" data-wiz="explain" type="button"><span class="mes-wiz-btn-t">Объяснить по-разному</span>'+
+'<span class="mes-wiz-btn-s">Несколько разных заходов к одному понятию</span></button>'+
+'<button class="mes-wiz-btn" data-wiz="task" type="button"><span class="mes-wiz-btn-t">Рабочий лист</span>'+
+'<span class="mes-wiz-btn-s">Разминка, основной блок, термины, вопросы</span></button></div>';
 a.parentElement.insertBefore(h,a);
 getName(function(n){var t=h.querySelector('.mes-hero-title');if(t)t.textContent=greetWord()+(n?', '+n:'')+'!';});}
 var mo=new MutationObserver(function(){hero();});
